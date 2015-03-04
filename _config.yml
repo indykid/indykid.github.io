@@ -1,4 +1,4 @@
-title:            Jarkyn in the Codeland
+title:            Jarkyn in Codeland
 description:      My journey through the wonderous Codeland on a path to be a craftsman.
 reading_time:     true
 words_per_minute: 200
@@ -11,7 +11,7 @@ url:
 owner:
   name:           Jarkyn
   avatar:         profile.jpg
-  bio:            "Cycling and coding are a daily practice. Sometimes I also teach, but the aim is to always learn."
+  bio:            "Cycling and coding are among my daily practices. I often teach and I always seek opportunities to learn."
   email:          jarkyn@8thlight.com
   # Social networking links used in footer. Update and remove as you like.
   twitter: https://twitter.com/indykidd
@@ -35,7 +35,7 @@ background:
 # bing_verify:
 
 # http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-timezone:    GB
+timezone:    Europe/London
 future:      true
 highlighter: pygments
 markdown:    kramdown
