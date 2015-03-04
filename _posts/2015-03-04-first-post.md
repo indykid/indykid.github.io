@@ -6,13 +6,10 @@ modified: 2015-03-03
 tags: []
 image:
   feature: main.jpeg
-  <!-- credit: dargadgetz
-  creditlink: http://www.dargadgetz.com/ios-7-abstract-wallpaper-pack-for-iphone-5-and-ipod-touch-retina/ -->
 comments: false
 ---
 <p></p>
-
-<p>I was on a lookout for companies to apply to, I wasn't ready to make a move but wanted to do research beforehand. Not long after I started hearing good things from different people about this one consultancy. Does it ever happen to you? Someone mentions something in a pub conversation and you make a mental note of it. You tell yourself you will check it out but don't act on it straightaway, you may even forget about it, and soon after the name pops up somewhere else... until you tell yourself that you must follow up on that. Word of mouth is a powerful thing and this is how I first heard about 8th Light.</p>
+<p>I was on a lookout for companies to apply to, I wasn't yet ready to make a move, but wanted to do research beforehand. Not long after I started hearing good things from different people about this one consultancy. Does it ever happen to you? Someone mentions something in a pub conversation and you make a mental note of it. You tell yourself you will check it out but don't act on it straightaway, you may even forget about it, and soon after the name pops up somewhere else... until you tell yourself that you must follow up on this. Word of mouth is a powerful thing and this is how I first heard about 8th Light.</p>
 
 <p>Then, I happened to have met people who work there and I was instantly impressed, they certainly had it, they had the 8th light, the invisible spectrum that you can not see, but you can sense it and see the effects of it.</p>
 
