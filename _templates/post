@@ -6,7 +6,7 @@ categories: {{ dir }}
 description:
 tags: []
 image:
-  feature:
+  feature: main.jpeg
   credit:
   creditlink:
 comments:
