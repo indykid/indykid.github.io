@@ -1,0 +1,126 @@
+---
+layout: post
+title: Change Mode
+description: "Geeking out - Part 2"
+modified: 2015-03-26
+tags: [chmod, mastermind]
+image:
+  feature: main.jpeg
+comments: false
+---
+
+<p></p>
+
+<p>You may not share my excitement at this, but if you are someone for whom CLI, UNIX and/or binary have been some sort of enigma at any point, then you may at least have some sympathy for me.</p>
+
+<p>In the previous <a href="/execute-it">post</a> I went through how I made file executable for the first time, by using <code>chmod</code> command. Taking one step at a time, I did it the boring way as it didn't require additional explanation... Now, I want to look at the more fun version of it which uses binary!</p>
+
+<p>This is the command I looked at last time:</p>
+{% highlight ruby %}
+chmod a+x bin/mastermind
+{% endhighlight %}
+
+<p>If mt current permissions are:</p>
+
+{% highlight ruby %}
+-rw-r--r--  1 Jarkyn  staff  312 12 Mar 15:30 mastermind
+{% endhighlight %}
+
+(You may want to refer to the detailed breakdown of this output <a href="/execute-it">here</a>)
+
+<p>Running the above chmod command would change them to the following:</p>
+
+{% highlight ruby %}
+👻  mastermind [master] ⚡ ls -l bin
+-rwxr-xr-x  1 Jarkyn    staff    312    12 Mar 15:40   mastermind
+{% endhighlight %}
+
+<p>Which means that we added ability to execute <em>mastermind</em> file to all user types. Lets rewind this change by running the opposite of "+" command:</p>
+
+{% highlight ruby %}
+chmod a-x bin/mastermind
+{% endhighlight %}
+
+<p>This would take away ability to execute from all the user types and we are back to:</p>
+
+{% highlight ruby %}
+-rw-r--r--  1 Jarkyn  staff  312 12 Mar 15:50 mastermind
+{% endhighlight %}
+
+<p>Next, we will put ability to execute back fot all user types, but this time instead of <code>cmod a+x <file_path></code> we will use:</p>
+
+{% highlight ruby %}
+chmod 755 <file_path>
+{% endhighlight %}
+
+<p>Running it would bring us back to </p>
+
+{% highlight ruby %}
+-rwxr-xr-x  1 Jarkyn    staff    312    12 Mar 16:02   mastermind
+{% endhighlight %}
+
+<p>So this code 755 seems to be doing the magic, lets see how it's doing it. First, let's look at those permissions:</p>
+
+{% highlight ruby %}
+rwx r-x r-x
+{% endhighlight %}
+
+<p>We can think of those as switches for a specific permission in each group:</p>
+
+{% highlight ruby %}
+on on on    on off on    on off on
+{% endhighlight %}
+
+<p>And taking it step further we can represent this as binary switches: 1 means <em>on</em>, 0 means <em>off</em>.</p>
+
+{% highlight ruby %}
+111 101 101
+{% endhighlight %}
+
+<p>Now, if we convert each one to the decimal:</p>
+
+<pre>
+  111 => 7
+  101 => 5
+  101 => 5
+</pre>
+
+<p>And this is why we can say:</p>
+
+{% highlight ruby %}
+chmod 755 <file_path>
+{% endhighlight %}
+
+<p>As you imagine there will be a number of permutations representing whether each r/w/x is on or off</p>
+<pre>
+--- => 000 => 0 => NO read write or execute
+
+--x => 001 => 1 => Execute (because last bit set to 1)
+
+-w- => 010 => 2 => Write (because middle bit set to 1)
+
+-wx => 011 => 3 => Write,Execute (because last 2 bits set to 1)
+
+r-- => 100 => 4 => Read (because first bit set to 1)
+
+r-x => 101 => 5 => Read,Execute (because first and last bits set to 1)
+
+rw- => 110 => 6 => Read,Write (because first and second bits set to 1)
+
+rwx => 111 => 7 => Read, Write, Execute (because all bits set to 1)
+</pre>
+
+<p>Say you wanted following permissions for a file:</p>
+
+{% highlight ruby %}
+rwx r-- --x
+{% endhighlight %}
+
+<p>This is how the command would look like:</p>
+
+{% highlight ruby %}
+chmod 741 <file_path>
+{% endhighlight %}
+
+<p>That's it, no magic and no more mystery! Which brings me to the end of this geek out session, hope you found it useful!</p>
+
