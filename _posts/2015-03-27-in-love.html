@@ -1,0 +1,340 @@
+---
+layout: post
+title: I think I am in love
+description: "Functional acquaintance..."
+modified: 2015-03-27
+tags: []
+image:
+  feature: stairway.jpg
+comments: false
+---
+
+<p></p>
+
+<p>It's Friday again, 8thLU time! If you are reading this for the first time, 8thLU is the time set aside on Fridays for us to have talks, work on side projects, to keep mastering our craft! This time we had a bit of a teaser from <a href="https://twitter.com/skim">Skim</a> on his upcoming talk about ECMA-5 vs ECMA-6. Then he gave us this <a href="http://jhusain.github.io/learnrx/">set</a> of exercises by <a href="https://twitter.com/jhusain">Jafar Husain</a>. It is titled "Functional Programming in Javascript", sounds very enticing, doesn't it? What does 'functional' actually mean? I had a vague idea before, but I can't say I was perfectly clear on the concept.</p>
+
+<p>The rest of the post will make a lot more sense to you if you tried these exercises yourself first. At the start they seem fairly straightforward, you walk yourself through the implementation of ennumerable methods on array in JS, like <code>map, filter</code> and <code>concatAll</code> (the latter is the equivalent of <code>flatten</code> in other languages). You then start chaining them... ok, so you have methods that return something and then you chain them, so values get passed from one funciton to another and another, you have no explicit variable assignment. I have seen and done it before, nothing new or unusual here tbh, I expected this from functional approach, but where's the catch, what is it about functional programming that makes it, sort of, 'fashionable'?</p>
+
+<p>So I was working steadily through the exercises, it was all making sense and then I got to the question 12 (if you don't want to do all the exercises, I challenge you to try that one at least). It has a deeply nested data by which the result needed to be filtered before producing the final result. This is the data:</p>
+
+
+{% highlight ruby %}
+var movieLists = [
+  {
+    name: "Instant Queue",
+    videos : [
+      {
+        "id": 70111470,
+        "title": "Die Hard",
+        "boxarts": [
+          { width: 150, height:200, url:"http://cdn-0.nflximg.com/images/2891/DieHard150.jpg" },
+          { width: 200, height:200, url:"http://cdn-0.nflximg.com/images/2891/DieHard200.jpg" }
+        ],
+        "url": "http://api.netflix.com/catalog/titles/movies/70111470",
+        "rating": 4.0,
+        "bookmark": []
+      },
+      {
+        "id": 654356453,
+        "title": "Bad Boys",
+        "boxarts": [
+          { width: 200, height:200, url:"http://cdn-0.nflximg.com/images/2891/BadBoys200.jpg" },
+          { width: 150, height:200, url:"http://cdn-0.nflximg.com/images/2891/BadBoys150.jpg" }
+
+        ],
+        "url": "http://api.netflix.com/catalog/titles/movies/70111470",
+        "rating": 5.0,
+        "bookmark": [{ id:432534, time:65876586 }]
+      }
+    ]
+  },
+  {
+    name: "New Releases",
+    videos: [
+      {
+        "id": 65432445,
+        "title": "The Chamber",
+        "boxarts": [
+          { width: 150, height:200, url:"http://cdn-0.nflximg.com/images/2891/TheChamber150.jpg" },
+          { width: 200, height:200, url:"http://cdn-0.nflximg.com/images/2891/TheChamber200.jpg" }
+        ],
+        "url": "http://api.netflix.com/catalog/titles/movies/70111470",
+        "rating": 4.0,
+        "bookmark": []
+      },
+      {
+        "id": 675465,
+        "title": "Fracture",
+        "boxarts": [
+          { width: 200, height:200, url:"http://cdn-0.nflximg.com/images/2891/Fracture200.jpg" },
+          { width: 150, height:200, url:"http://cdn-0.nflximg.com/images/2891/Fracture150.jpg" },
+          { width: 300, height:200, url:"http://cdn-0.nflximg.com/images/2891/Fracture300.jpg" }
+        ],
+        "url": "http://api.netflix.com/catalog/titles/movies/70111470",
+        "rating": 5.0,
+        "bookmark": [{ id:432534, time:65876586 }]
+      }
+    ]
+  }
+];
+{% endhighlight %}
+
+<p>You can see two objects inside the <code>movieLists</code> array, I will refer to them as <em>category</em>, both of categories have <code>videos</code> property. That property contains <em>video</em> objects - these are the objects we are most interested in for the purpose of this exercise. As a result we need to get the following array of objects: </p>
+
+{% highlight ruby %}
+[
+  {"id": 675465,"title": "Fracture","boxart":"http://cdn-0.nflximg.com/images/2891/Fracture150.jpg" },
+  {"id": 65432445,"title": "The Chamber","boxart":"http://cdn-0.nflximg.com/images/2891/TheChamber150.jpg" },
+  {"id": 654356453,"title": "Bad Boys","boxart":"http://cdn-0.nflximg.com/images/2891/BadBoys150.jpg" },
+  {"id": 70111470,"title": "Die Hard","boxart":"http://cdn-0.nflximg.com/images/2891/DieHard150.jpg" }
+  ];
+{% endhighlight %}
+
+<p>Just to verbalise this, we need to get an array of objects which contain only specific information out of original <em>video</em> objects, based on what is in the <code>boxarts</code> property of the <em>video</em> object is an array of boxart objects and we only want one of those included in the result, the one which is 150px wide. I hope that makes sense... We should break this down a bit:</p>
+
+<ol>
+  <li>Get the <em>video</em> objects out of nested data structure into a simpler one</li>
+  <li>Go over the objects in the new structure and extract only the necessary info</li>
+</ol>
+
+<p>This sounds logical, I will try and follow these general steps. By simpler structure I mean an array which containes the <em>video</em> objects, this shouldn't be so hard. First step, I will map over the <code>movieLists</code> array:</p>
+
+{% highlight ruby %}
+movieLists.map( function( movieList ){
+  return movieList.videos;
+});
+{% endhighlight %}
+
+<p>The result of this operation will be two nested arrays of <em>video</em> objects:</p>
+
+{% highlight ruby %}
+[
+  [
+    {
+      "id": 70111470,
+      "title": "Die Hard",
+      "boxarts": [
+        { width: 150, height:200, url:"http://cdn-0.nflximg.com/images/2891/DieHard150.jpg" },
+        { width: 200, height:200, url:"http://cdn-0.nflximg.com/images/2891/DieHard200.jpg" }
+      ],
+      "url": "http://api.netflix.com/catalog/titles/movies/70111470",
+      "rating": 4.0,
+      "bookmark": []
+    },
+    {
+      "id": 654356453,
+      "title": "Bad Boys",
+      "boxarts": [
+        { width: 200, height:200, url:"http://cdn-0.nflximg.com/images/2891/BadBoys200.jpg" },
+        { width: 150, height:200, url:"http://cdn-0.nflximg.com/images/2891/BadBoys150.jpg" }
+
+      ],
+      "url": "http://api.netflix.com/catalog/titles/movies/70111470",
+      "rating": 5.0,
+      "bookmark": [{ id:432534, time:65876586 }]
+    }
+  ],
+  [
+    {
+      "id": 65432445,
+      "title": "The Chamber",
+      "boxarts": [
+        { width: 150, height:200, url:"http://cdn-0.nflximg.com/images/2891/TheChamber150.jpg" },
+        { width: 200, height:200, url:"http://cdn-0.nflximg.com/images/2891/TheChamber200.jpg" }
+      ],
+      "url": "http://api.netflix.com/catalog/titles/movies/70111470",
+      "rating": 4.0,
+      "bookmark": []
+    },
+    {
+      "id": 675465,
+      "title": "Fracture",
+      "boxarts": [
+        { width: 200, height:200, url:"http://cdn-0.nflximg.com/images/2891/Fracture200.jpg" },
+        { width: 150, height:200, url:"http://cdn-0.nflximg.com/images/2891/Fracture150.jpg" },
+        { width: 300, height:200, url:"http://cdn-0.nflximg.com/images/2891/Fracture300.jpg" }
+      ],
+      "url": "http://api.netflix.com/catalog/titles/movies/70111470",
+      "rating": 5.0,
+      "bookmark": [{ id:432534, time:65876586 }]
+    }
+  ]
+]
+{% endhighlight %}
+
+<p>Next step would be to flatten this, I will use <code>concatAll</code> function, which is defined within the exercise (it is not a native JS funciton, so if you are trying to run this code in your console, you would need to define it first, refer to the previous exercises in the <a href="http://jhusain.github.io/learnrx/">set</a>). And, remember, we are in a functional universe right now, so we will just chain this function to the previous one:</p>
+
+{% highlight ruby %}
+movieLists.map( function( movieList ){
+  return movieList.videos;
+}).concatAll();
+{% endhighlight %}
+
+<p>After flattening our nested arrays:</p>
+
+{% highlight ruby %}
+[
+  {
+    "id": 70111470,
+    "title": "Die Hard",
+    "boxarts": [
+      { width: 150, height:200, url:"http://cdn-0.nflximg.com/images/2891/DieHard150.jpg" },
+      { width: 200, height:200, url:"http://cdn-0.nflximg.com/images/2891/DieHard200.jpg" }
+    ],
+    "url": "http://api.netflix.com/catalog/titles/movies/70111470",
+    "rating": 4.0,
+    "bookmark": []
+  },
+  {
+    "id": 654356453,
+    "title": "Bad Boys",
+    "boxarts": [
+      { width: 200, height:200, url:"http://cdn-0.nflximg.com/images/2891/BadBoys200.jpg" },
+      { width: 150, height:200, url:"http://cdn-0.nflximg.com/images/2891/BadBoys150.jpg" }
+
+    ],
+    "url": "http://api.netflix.com/catalog/titles/movies/70111470",
+    "rating": 5.0,
+    "bookmark": [{ id:432534, time:65876586 }]
+  },
+  {
+    "id": 65432445,
+    "title": "The Chamber",
+    "boxarts": [
+      { width: 150, height:200, url:"http://cdn-0.nflximg.com/images/2891/TheChamber150.jpg" },
+      { width: 200, height:200, url:"http://cdn-0.nflximg.com/images/2891/TheChamber200.jpg" }
+    ],
+    "url": "http://api.netflix.com/catalog/titles/movies/70111470",
+    "rating": 4.0,
+    "bookmark": []
+  },
+  {
+    "id": 675465,
+    "title": "Fracture",
+    "boxarts": [
+      { width: 200, height:200, url:"http://cdn-0.nflximg.com/images/2891/Fracture200.jpg" },
+      { width: 150, height:200, url:"http://cdn-0.nflximg.com/images/2891/Fracture150.jpg" },
+      { width: 300, height:200, url:"http://cdn-0.nflximg.com/images/2891/Fracture300.jpg" }
+    ],
+    "url": "http://api.netflix.com/catalog/titles/movies/70111470",
+    "rating": 5.0,
+    "bookmark": [{ id:432534, time:65876586 }]
+  }
+]
+{% endhighlight %}
+
+<p>Great, our objects of interest are no longer nested, what's next? The next step on the list above was to go over and get only the data we need, nice! So, as a result I need a new array with new objects contructed from the data of each of the <em>video</em> objects, sounds like <code>map</code> would be good to use here:</p>
+
+
+{% highlight ruby %}
+movieLists.map( function( movieList ){
+  return movieList.videos;
+})
+.concatAll()
+.map( function( video ){
+  return {
+    id: video.id,
+    title: video.title,
+    boxart: video.boxarts.filter(function(boxart){
+      return boxart.width === 150 })[0].url
+    }
+});
+{% endhighlight %}
+
+<p>So inside the second map is where I am constructing the new object. For the boxart property all I am doing is filtering through all the boxarts and getting only the one I want. However, the purpose of filter is to return new array, rather than an object itself, which is why I added a sneaky <code>[0]</code> and only after I call <code>.url</code> on it.</p>
+
+<p>The result is exactly what I wanted:</p>
+
+{% highlight ruby %}
+[
+  {
+    boxart: "http://cdn-0.nflximg.com/images/2891/DieHard150.jpg",
+    id: 70111470,
+    title: "Die Hard"
+  },
+  {
+    boxart: "http://cdn-0.nflximg.com/images/2891/BadBoys150.jpg"
+    id: 654356453
+    title: "Bad Boys"
+  },
+  {
+    boxart: "http://cdn-0.nflximg.com/images/2891/TheChamber150.jpg",
+    id: 65432445,
+    title: "The Chamber"
+  },
+  {
+    boxart: "http://cdn-0.nflximg.com/images/2891/Fracture150.jpg",
+    id: 675465,
+    title: "Fracture"
+  }
+]
+{% endhighlight %}
+
+<p>We got the result, but at what cost? I felt somewhat dirty for having to use index method. And if you read the instructions for the exercise, you would know that I was not supposed to use it. Well that's ok, because I can always use <code>pop</code> instead, with pop that last map would look like so:</p>
+
+{% highlight ruby %}
+movieLists.map( function( movieList ){
+  return movieList.videos;
+})
+.concatAll()
+.map( function( video ){
+  return {
+    id: video.id,
+    title: video.title,
+    boxart: video.boxarts.filter(function(boxart){
+      return boxart.width === 150 }).pop().url
+    }
+});
+{% endhighlight %}
+
+<p>This is less obvious, but its the exact same solution, really. And it's just not good enough, not only because I feel dirty to use <code>[0]</code>/<code>pop()</code> here, but also because our solution relies on the fact that a boxart with width of 150 is present for all the <em>video</em> objects in the original data. If <code>filter</code> doesn't find any items matching the condition it returns empty array. And that means that we are calling <code>[0]</code>/<code>pop()</code> on an empty array we will get <code>undefined</code>, which means we would be calling <code>.url</code> on undefined and this will error, this is really flaky...</p>
+
+<p>Looks like we need to filter the suitable videos first and then get the relevant data. The problem here is that the filter condition is not based on the value of one of the <em>video</em> object's own properties, but rather on the value within the value for <em>video</em>'s <code>boxarts</code> property... So, if we try to filter, the condition for the filter is going to be long at best. Ok, something like this:</p>
+
+{% highlight ruby %}
+movieLists.map( function( movieList ){
+  return movieList.videos;
+})
+.concatAll() // upto this point exactly as previously
+.filter( function( video ){
+  return video.boxarts.filter(function(boxart){
+    return boxart.width === 150
+  }).length != 0;
+});
+{% endhighlight %}
+
+<p>The condition inside the first filter is filtering again through all the values within <code>boxarts</code> and then checking that the length of that result of this inner filter is not 0, we have boxart 150px wide present. If our data is not consistent, ie some don't have the boxart in the required dimensions, only after a step like this it would be safe to use the map we used previously to get the results:</p>
+
+{% highlight ruby %}
+movieLists.map( function( movieList ){
+  return movieList.videos;
+})
+.concatAll()
+.filter( function( video ){
+  return video.boxarts.filter(function(boxart){
+    return boxart.width === 150
+  }).length != 0;
+})
+.map( function( video ){
+  return {
+    id: video.id,
+    title: video.title,
+    boxart: video.boxarts.filter(function(boxart){
+      return boxart.width === 150 }).pop().url
+    }
+});
+{% endhighlight %}
+
+<p>This is very step by step way of getting result, but it still doesn't make me feel less dirty. There must be a way to make it more consize. Let's rewind and come back to the step where we have just flattened our nested arrays:</p>
+
+{% highlight ruby %}
+movieLists.map( function( movieList ){
+  return movieList.videos;
+})
+.concatAll()
+{% endhighlight %}
+
+<p>to be continued...</p>
+
+
+<p>So I think I am in love with functional and I hold <a href="https://twitter.com/jhusain">this</a> guy, and also <a href="https://twitter.com/skim">this</a> guy responsible!</p>
