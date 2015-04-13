@@ -1,0 +1,131 @@
+---
+layout: post
+title: Python for the first time
+description: "Where's the magic?"
+modified: 2015-04-07
+tags: []
+image:
+  feature: stairway.jpg
+comments: false
+---
+
+<p></p>
+
+<p>I mentioned in the previous post that I  was reading Kent Beck's <em>Test Driven Development by Example</em>, and so far I am learning some unexpected things on top of the TDD techniques.</p>
+
+<p>I learnt an interesting thing about Python among those. Apparently, one of the coolest features of Python is that you can treat the names of classes and methods like functions. So let's see what does it actually gives us.</p>
+
+<p>Say if we had a class <em>Person</em>:</p>
+
+{% highlight ruby %}
+class Person:
+  __init__(self, talent)
+    self.talent= talent
+{% endhighlight %}
+
+<p>To create an instance of a class we would do the following:</p>
+
+{% highlight ruby %}
+artist = Person("drawing")
+{% endhighlight %}
+
+<p>For example, in Ruby, the equivalent would be:</p>
+
+{% highlight ruby %}
+Person.new("drawing")
+{% endhighlight %}
+
+<p>In many other languages you would use a keyword <code>new</code>, but in Python you treat a class name as a function. So, this is not such a big deal, I hear you say. The real cool thing comes from ability to use attribute values as functions as well, if the attribute value corresponds to the method name:</p>
+
+{% highlight ruby %}
+def drawing(self):
+  print("I must have been a Picasso in my previous life!")
+{% endhighlight %}
+
+<p>So we could do something like:</p>
+
+{% highlight ruby %}
+def show_talent(self):
+  method= getattr(self, self.talent)
+  method()
+{% endhighlight %}
+
+<p>So the magic is in these lines:</p>
+
+{% highlight ruby %}
+...
+  method= getattr(self, self.talent)
+  method()
+...
+{% endhighlight %}
+
+<p><code>getattr(self, self.talent)</code> returns us the value of the <em>talent</em> attribute for our instance, i.e. <em>"drawing"</em>. This value is assigned to a variable <code>method</code>, and then we just invoke the variable as if it was a funciton, because we actually have a method within a class with a name that corresponds to the string <em>"drawing"</em>.</p>
+
+<p>And this is pretty awesome, we can dynamically invoke methods specific to the given instance of a class. So we could have <em>persons</em> with different talents, and all we need to do to demonstrate their talent is to call <code>.show_talent()</code>.</p>
+
+<p>Let's define another method:</p>
+
+{% highlight ruby %}
+def baking(self):
+  print("my cakes are to die for!")
+{% endhighlight %}
+
+<p>And let's try another instance of <code>Person</code> class:</p>
+
+{% highlight ruby %}
+baker = Person("baking")
+{% endhighlight %}
+
+<p>So I can just call:</p>
+
+{% highlight ruby %}
+baker.show_talent()
+artist.show_talent()
+{% endhighlight %}
+
+<p>Evenethough, they are both instances of the <code>Person</code> class the method that will be called for as a result is specific to that instance.</p>
+
+<p>Here's the whole class, as it may be easier to see all of it at once, especially, if it is the first time you are looking at Python:</p>
+
+{% highlight ruby %}
+class Person:
+  def __init__(self, talent):
+    self.talent= talent
+
+  def drawing(self):
+    print("I must have been a Picasso in my previous life!")
+
+  def baking(self):
+    print("my cakes are to die for!")
+
+  def show_talent(self):
+    method= getattr(self, self.talent)
+    method()
+
+{% endhighlight %}
+
+<p>And this is how we instanciated the class and asked the instance to perform their individual talent for us:</p>
+
+{% highlight ruby %}
+artist = Person("drawing")
+artist.show_talent()
+
+baker = Person("baking")
+baker.show_talent()
+{% endhighlight %}
+
+<p> This is my first acquaintance with Python and I am already liking it!</p>
+<p>Couple of other things I noticed:</p>
+
+<ul>
+  <li>All that indentation is not just for readability, it matters, and I like that I can nest code instead of having to write "end" keywords. (I wish Ruby did that!)</li>
+  <li>Kent Beck is using camelCase!! I got excited as I am not a big fan of snake case personally, I find camel case much more elegant. But unfortunately that excitement didn’t get to live long, because apparently general convention for Python is snake case these days, camel case is only acceptable if you are maintaining legacy codebase. Oh well, at least Python had its wild days.</li>
+  <li>I also really enjoyed using parenthesis for method invocation in Python, even if you don’t have arguments. There’s certain satisfaction that comes from such explicitness, there’s no ambiguity whether its a variable or a method name. Of course I could just use them in Ruby, however, rubyists are very opinionated on this matter, we don’t want to be upsetting them.</li>
+</ul>
+
+<p>So far it appears that the language is much more explicit than what I am used to (I obviously have not got to Java yet), and this is a definite win for me!</p>
+
+
+
+
+
