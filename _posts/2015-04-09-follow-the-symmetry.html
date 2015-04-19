@@ -1,0 +1,42 @@
+---
+layout: post
+title: Follow the Symmetry
+description: "Duplication and Symmetry in tests"
+modified: 2015-04-11
+tags: [TDD]
+image:
+  feature: make-your-own-path.jpeg
+comments: false
+---
+
+<p></p>
+
+<p>I now have spent a whole month practicing TDD. I can't yet say I am fully comfortable, but my fear of it is definitely gone.</p>
+
+<p>One of the things I understood about TDD technique in general is that it helps you solve problems you don't even know where to begin to solve. It makes you tackle smaller things that you do know how to approach, minimizes the unknown territory and then gradually allows you to chip away from it, driving yourself towards the solution.</p>
+
+<p>When solution is not in the plain sight, making small steps is the key. But more often when we are solving something complex we tend to take big steps, and by doing that we are very likely to make wrong turns along the way, and not realise that there was another path. Being able to write tests to force little change gives you a lot of control. It forces you to think about what does the code you are writing, actually represent, and this helps you take the next step in the right direction.</p>
+
+<p>General scenario for TDD that I experienced and practiced so far:</p>
+
+<ol>
+  <li>Think about various outcomes for your method depending on different cases/coditions etc, write the examples out, group examples based on your cases/conditions. Each of the scenarios will be a <i>dimension</i> that you could explore with the tests, and you don't move on to the next dimension untill you fully explore the one you are in.</li>
+  <li>Write a test, the simplest scenario possible for your method that you are testing. The kind of scenario that hardly requires any implementation.</li>
+  <li>Make it pass with degenerate solution, just by returning the constant, ie by returning the same value that your test is expecting. Seems dumb, no? That is how I used to feel...</li>
+  <li>Ahything to refactor? Probably not yet...</li>
+  <li>Do we like our solution? No we don't, it always returns the same thing. We know we want to change that, but we can't write more code without first writing the test, so we need a test that would force us to change the implementation. What could that be? Another test that would expect different result, so same test as before, really, but just with different values.</li>
+  <li>Make this test pass. Having an ugly implementation here is absolutely fine. Most of the time you will be forced to introduce <code>if</code> statement and check which constant you will return out of the method based on what has been received by the method.</li>
+  <li>Is there anything you can re-factor, ie simplify, remove duplication and/or generalise hardcoded solution already? If yes, do that, if not, move on to the next test. Often you might not have obvious duplication just yet which you could refactor, but you will be able to see some similarities in your code. If we see these similarities twice, that could be just coincedence, it's not yet solid proof that you have common duplication.</li>
+  <li>If at this point you do have some unattractive code, and you were not ready to refactor yet in the previous step, we will write another test. Again, it will be a variation of the same case, as before, with different values. Make that pass, again with the simplest most obvious implementation, at the same time you are building up the duplication in the code.</li>
+  <li>If you didn't refactor before this step you would have 3 cases of duplication, which is enough of proof of the concept and we can now generalise by replacing constants and <code>if</code>'s with a variable that would keep your tests green.</li>
+  <li>Once you are done with the dimension, you move on to the next and repeat the steps allover again.</li>
+</ol>
+
+<p>Everytime we write tests and by making small steps, what we aim for is duplication, duplicaiton is our best friend, it acts as the proof of the concept and helps us to generalise our solution. This is the cycle that gets repeated over and over again and there are few tehniques in between too.</p>
+
+<p>Duplication is great, symmtery is even better</p>
+
+<p>Very often duplication is not obvious, but very subtle and because of that it's hard to generalise your solution. This is when symmetry comes to the rescue. When you smell some duplication, make sure to re-write it in a way that it's not just duplicated, but symmetrically duplicated. Adding symmetry makes it obvious and safe to get rid off duplication. So I say, go for the symmetry.</p>
+
+<p>PS I do realise that examples would make this post clearer, I will aim to add some later. Also, if you are wanting to learn TDD, no better way than to start with some kata's.</p>
+
