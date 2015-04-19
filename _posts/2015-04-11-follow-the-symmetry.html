@@ -20,8 +20,8 @@ comments: false
 <p>General scenario for TDD that I experienced and practiced so far:</p>
 
 <ol>
-  <li>Think about various outcomes for your method depending on different cases/coditions etc, write the examples out, group examples based on your cases/conditions. Each of the scenarios will be a <i>dimension</i> that you could explore with the tests, and you don't move on to the next dimension untill you fully explore the one you are in.</li>
-  <li>Write a test, the simplest scenario possible for your method that you are testing. The kind of scenario that hardly requires any implementation.</li>
+  <li>Think about various outcomes for your method depending on different cases/conditions etc, write the examples out, group examples based on your cases. I will refer to each such case/scenario of tests as <i>dimension</i>. You would want to explore each dimension with tests, and you don't move on to the next dimension until you fully explore the one you are in.</li>
+  <li>Write a test, find the simplest scenario possible for your method that you are testing. The kind of scenario that hardly requires any implementation.</li>
   <li>Make it pass with degenerate solution, just by returning the constant, ie by returning the same value that your test is expecting. Seems dumb, no? That is how I used to feel...</li>
   <li>Ahything to refactor? Probably not yet...</li>
   <li>Do we like our solution? No we don't, it always returns the same thing. We know we want to change that, but we can't write more code without first writing the test, so we need a test that would force us to change the implementation. What could that be? Another test that would expect different result, so same test as before, really, but just with different values.</li>
