@@ -1,0 +1,46 @@
+---
+layout: post
+title: Let's play fetch
+description: "Gotta love Ruby"
+modified: 2015-05-04
+tags: [ruby, hash]
+image:
+  feature: make-your-own-path.jpeg
+comments: false
+---
+<p></p>
+
+<p>I learnt something super useful today, a handy method that Ruby Hash has. Actually, it is more of a re-discovery. When I first came across this method, I couldn't appreciate its usefulness. One of the tasks I was working on resulted in a code like below, where <code>tally</code> is your regular Hash and <code>barcode</code> is a variable containing a key which may or may not be in the hash:</p>
+
+{highlight ruby}
+if tally[barcode] #if this particuar key is already present in this hash
+  tally[barcode] += 1 #increment the existing count
+else
+  tally[barcode] = 1 #otherwise, start the count for this barcode with 1
+end
+{endhighlight}
+
+<p>This makes me feel clunky and heavy, such a simple logic, so many lines... Wish I could just do this instead:</p>
+
+{highlight ruby}
+  tally[barcode] += 1
+{endhighlight}
+
+<p>Of course, I can't do that, if the key doesn't exist, that means the return value out of the <code>tally[barcode]</code> will be <code>nil</code> and we can't add 1 to it. Nevertheless, there must be a better way of doing this, we are using Ruby after all:</p>
+
+{highlight ruby}
+  tally[barcode] = tally.fetch(barcode, 0) + 1
+{endhighlight}
+
+<p>One line!!! Doesn't it feel satisfying? Let's now have a look at what <code>fetch</code> method does. In short, if the key we are asking for is present, it will return corresponding value, however if it's not present, it will return the sesond argument we passed in. This is expremely helpful! In my case I was working on a checkout kata, where you have a set of bulk discounts, and before I could apply them, I had to get the quantity of each item so see if any were eligible. <code>tally</code> is what I used to keep track of how many of each items I have. It would have looked something like:</p>
+
+{highlight ruby}
+{
+'apples' => 3,
+'pears'  => 2,
+}
+{endhighlight}
+
+<p>If someone scans apples, since 'apples' key already exists, fetch will return 3 and we just increase the count to 4, but, if, say 'bananas' are scanned, the key is non-existent, our fetch will return 0 and since we are adding 1 after fetching, the first count for new barcode will be 1, which is exactly what we need, simples!</p>
+<p>Next time you have to check if the key exists within the hash and are doing something different based on that, remember <code>fetch</code>, it may save you some lines and add some elegance to your code!</p>
+
