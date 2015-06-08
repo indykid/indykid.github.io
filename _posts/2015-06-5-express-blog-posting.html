@@ -1,0 +1,61 @@
+---
+layout: post
+title: Express blog posting
+description: "Writing takes time"
+modified: 2015-06-05
+tags: []
+image:
+  feature: spiral_window_bars.jpeg
+comments: false
+---
+
+<p></p>
+
+<i>The following is a result of having only one hour to research a new topic and write a blog post about it. It was done as part of the workshop run by Micah Martin when he visited London. The post is presented as it was on the day.</em></i>
+
+<p>Highly responsive applications that feel like native apps is the high ambition of most web apps these days.
+And it comes at a cost, MV* pattern gets you going really fast and DOM updates feel nice and smooth, it is a slippery slope and hard to keep coupling to a minimum between models and views.
+The main trouble is that the application complexity grows fast, with the usual consequences.</p>
+
+<p>If you are a fan of functional, you are probably gravitating towards data structures which are immutable and have a soft spot for pure functions. But since we still need CRUD, we still need a good pattern for flowing updates to UI.
+</p>
+
+<h4>Flux: A Pattern for Unidirectional Data Flow</h4>
+
+<p>Complement to React, Flux is a pattern rather than library, before discussing it, let’s have a super brief run down of ReactJS</p>
+
+<ul>
+  <li>- Makes DOM responsive/reactive to your applications state, i.e. makes your view predictable and declarative</li>
+  <li>- Allows you to create immutable views which get re-rendered each time the state of application changes</li>
+  <li>- Does not re-create the entire DOM of your application for each state change (that would be too expensive)</li>
+  <li>- It implements virtual DOM which it uses to diff the changes that occur to the DOM, so it only performs minimal changes it needs to keep it up-to-date
+</li>
+</ul>
+
+<p>Application architecture used with React is based around the unidirectional data flow. It allows you to easily keep the application logic separate from individual views reducing coupling in your application. This is using the Von Neumann model of computing, where data only flows in one direction.</p>
+
+<p>So, data flows one way: from owner to child. You can think of it as "one-way data binding”.</p>
+
+<p>However, there are lots of applications that require you to read some data and flow it back into your program. For example, when developing forms, you'll often want to update some React state when you receive user input. Or perhaps you want to perform layout in JavaScript and react to changes in some DOM element size.</p>
+
+<p>In React, you would implement this by listening to a "change" event, read from your data source (usually the DOM) and call setState() on one of your components. "Closing the data flow loop" explicitly leads to more understandable and easier-to-maintain programs. You may need to refer to React's forms documentation for more information.</p>
+
+<img src="https://facebook.github.io/flux/img/flux-simple-f8-diagram-explained-1300w.png">
+
+<p>A unidirectional data flow is central to the Flux pattern, and the above diagram should be the primary mental model for the Flux programmer. The dispatcher, stores and views are independent nodes with distinct inputs and outputs. The actions are simple objects containing the new data and an identifying type property. The following diagram demonstrates how the front end would interact with the server:</p>
+
+<img src="../images/react_request_response.png">
+
+<p>View action sends information in 2 directions:</p>
+<ul>
+  <li>~ notifies dispatcher that a request has taken place</li>
+  <li>~sends request to the server</li>
+</ul>
+
+<p>This structure allows to reason easily about application in a way that is reminiscent of functional reactive programming, or more specifically data-flow programming or flow-based programming, where data flows through the application in a single direction — there are no two-way bindings. Application state is maintained only in the stores, allowing the different parts of the application to remain highly decoupled. Where dependencies do occur between stores, they are kept in a strict hierarchy, with synchronous updates managed by the dispatcher.</p>
+
+<cite>Credit for images and some parts of content goes to ReactJS <a href="https://facebook.github.io/react/index.html">website</a>.</cite>
+
+
+
+
